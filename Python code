@@ -1,0 +1,158 @@
+# Importing Libraries
+
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import re
+from sklearn.cluster import KMeans
+
+# Reading Dataset
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+
+
+phoenix = pd.read_csv("/content/drive/MyDrive/Mall_Customers.csv")
+
+
+# Creating a DataFrame
+
+df = pd.DataFrame(phoenix)
+
+# Data Analysis
+
+df.head()
+
+df.tail()
+
+df.shape
+# If we have low amount of datapoints,
+# how can we enlarge the present datapoints to train our model
+
+df.info()
+
+df.isnull().sum()
+
+* Conclusions
+
+1. No Null Value
+2. Gender has the dtype of object, which needs to be taken care of
+
+df.describe()
+
+* Conclusions
+
+1. Avg. age of Customer is 38
+2. Customer that visits the mall is having the age b/w 18 to 70
+3. Having the Avg. annual income as $60k
+
+plt.figure(figsize=(15,10))
+sns.countplot(data=df, x='Age')
+
+
+df.head()
+
+# Distribution of Gender
+plt.figure(figsize=(8,8))
+df.Gender.value_counts().plot(kind='pie', autopct='%.2f%%', shadow=True,
+                              explode=(0,0.04))
+plt.legend()
+
+* Conclusion
+
+1. No. of females > No. of males
+2. Females are 12% more than Male
+3. Female visits the mall most of the time.
+
+plt.figure(figsize=(20, 7))
+sns.countplot(x='Annual Income (k$)', data=df)
+plt.title('Distribution of Annual Income')
+
+* Conclusions
+
+1. The customers that are having the salary of $54(k) and $78(K), visits the mall most of time
+
+plt.figure(figsize=(6,6))
+sns.histplot(df,x='Annual Income (k$)', hue='Gender', multiple='stack')
+plt.title('Annual Income Distribution w.r.t. to the Gender')
+plt.grid()
+
+* Conclusions:
+
+though the male earns more or the annual income of male is more but still female visits the mall most using two graphs
+
+#though the male earns more or the annual income
+#of male is more but still female visits the mall most using two graphs
+
+# Seaborn lmplot
+
+sns.lmplot(data=df,x='Spending Score (1-100)', y='Age', hue='Gender')
+
+# Machine Learning
+
+df.head()
+
+# Label Encoding
+from sklearn.preprocessing import LabelEncoder
+
+enc = LabelEncoder()
+
+df.Gender = enc.fit_transform(df.Gender)
+
+df.head()
+
+df.drop('CustomerID', axis = 1, inplace = True)
+
+df.head()
+
+ssd = []
+for i in range(1,11):
+  Kmodel = KMeans(n_clusters=i, n_init=15,max_iter=500)
+  Kmodel.fit(df)
+  ssd.append(Kmodel.inertia_)
+
+ssd
+
+plt.plot(range(1,11), ssd, marker='o')
+plt.grid()
+plt.title('Elbow plot')
+
+# k=6  because after 6 it goes linear
+
+Kmodel = KMeans(n_clusters=6)
+
+Kmodel.fit(df)
+# Kmodel.fit_predict(df)
+# Kmodel.predict(df)
+
+prediction = Kmodel.predict(df)
+
+prediction
+
+Kmodel.cluster_centers_
+
+
+len(Kmodel.cluster_centers_)
+
+
+color = np.array(['darkgray', 'lightsalmon', 'powderblue', 'red', 'yellow', 'black'])
+sns.scatterplot(x = df['Annual Income (k$)'],
+                y = df['Spending Score (1-100)'],
+                c=color[Kmodel.labels_],
+                s=50)
+
+import numpy as np
+rand = np.random.RandomState(65)
+
+x = rand.randint(100, size=10)
+print(x)
+
+
+
+
+
+
+
+
